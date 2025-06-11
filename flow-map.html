@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Flow Map from China to Multiple Countries</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/map/js/world.js"></script>
+    <style>
+        #main {
+            width: 100%;
+            height: 100vh; /* 设置地图高度为视口高度 */
+        }
+    </style>
+</head>
+<body>
+    <div id="main"></div>
+    <script>
+        // 初始化 ECharts 实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        // 地图数据
+        var geoCoordMap = {
+            '北京': [116.407526, 39.90403],
+            '东京': [139.691706, 35.689487],
+            '越南': [105.849453, 21.025042],
+            '首尔': [126.978864, 37.566792],
+            '堪培拉': [149.128458, -35.281987],
+            '雅加达': [106.849088, -6.175947],
+            '马尼拉': [120.984242, 14.599516],
+            '吉隆坡': [101.686539, 3.139094],
+            '曼谷': [100.501765, 13.756331],
+            '金边': [104.918777, 11.554940],
+            '新加坡': [103.819836, 1.352084],
+            '内比都': [96.191112, 21.558143],
+            '惠灵顿': [174.776192, -41.291138],
+            '斯里巴加湾市': [115.116376, 4.893333],
+            '万象': [102.600611, 17.985278]
+        };    // 流向数据
+        var data = [
+            {
+                from: '北京',
+                to: '东京',
+                value: 100
+            },
+            {
+                from: '北京',
+                to: '越南',
+                value: 80
+            },
+            {
+                from: '北京',
+                to: '首尔',
+                value: 90
+            },
+            {
+                from: '北京',
+                to: '堪培拉',
+                value: 70
+            },
+            {
+                from: '北京',
+                to: '雅加达',
+                value: 60
+            },
+            {
+                from: '北京',
+                to: '马尼拉',
+                value: 75
+            },
+            {
+                from: '北京',
+                to: '吉隆坡',
+                value: 85
+            },
+            {
+                from: '北京',
+                to: '曼谷',
+                value: 95
+            },
+            {
+                from: '北京',
+                to: '金边',
+                value: 65
+            },
+            {
+                from: '北京',
+                to: '新加坡',
+                value: 110
+            },
+            {
+                from: '北京',
+                to: '内比都',
+                value: 55
+            },
+            {
+                from: '北京',
+                to: '惠灵顿',
+                value: 50
+            },
+            {
+                from: '北京',
+                to: '斯里巴加湾市',
+                value: 45
+            },
+            {
+                from: '北京',
+                to: '万象',
+                value: 60
+            }
+        ];
+
+        // 转换数据格式
+        var convertData = function (data) {
+            var res = [];
+            for (var i = 0; i < data.length; i++) {
+                var dataItem = data[i];
+                var fromCoord = geoCoordMap[dataItem.from];
+                var toCoord = geoCoordMap[dataItem.to];
+                if (fromCoord && toCoord) {
+                    res.push({
+                        fromName: dataItem.from,
+                        toName: dataItem.to,
+                        coords: [fromCoord, toCoord],
+                        value: dataItem.value
+                    });
+                }
+            }
+            return res;
+        }; var option = {
+            backgroundColor: '#404a59',
+            title: {
+                text: '动态流向地图：中国到亚洲各国',
+                subtext: '示例',
+                left: 'center',
+                textStyle: {
+                    color: '#fff'
+                }
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: function (params) {
+                    return params.seriesName + '<br/>' +
+                        params.name + '：' + params.value;
+                }
+            },
+            geo: {
+                map: 'world',
+                roam: true,
+                label: {
+                    emphasis: {
+                        show: false
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        areaColor: '#323c48',
+                        borderColor: '#404a59'
+                    },
+                    emphasis: {
+                        areaColor: '#2a333d'
+                    }
+                }
+            },
+            series: [
+                {
+                    name: '流向',
+                    type: 'lines',
+                    coordinateSystem: 'geo',
+                    data: convertData(data),
+                    lineStyle: {
+                        normal: {
+                            color: '#ff0000',
+                            width: 1,
+                            opacity: 0.6,
+                            curveness: 0.2
+                        }
+                    },
+                    effect: {
+                        show: true,
+                        period: 6,
+                        trailLength: 0.7,
+                        symbol: 'arrow',
+                        symbolSize: 6
+                    }
+                },
+                {
+                    name: '起始点',
+                    type: 'scatter',
+                    coordinateSystem: 'geo',
+                    data: [
+                        { name: '北京', value: geoCoordMap['北京'] }
+                    ],
+                    symbolSize: 10,
+                    label: {
+                        normal: {
+                            show: true,
+                            formatter: '{b}',
+                            position: 'right'
+                        },
+                        emphasis: {
+                            show: true
+                        }
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: '#ff0000'
+                        }
+                    }
+                },
+                {
+                    name: '终点',
+                    type: 'scatter',
+                    coordinateSystem: 'geo',
+                    data: [
+                        { name: '东京', value: geoCoordMap['东京'] },
+                        { name: '越南', value: geoCoordMap['越南'] },
+                        { name: '首尔', value: geoCoordMap['首尔'] },
+                        { name: '堪培拉', value: geoCoordMap['堪培拉'] },
+                        { name: '雅加达', value: geoCoordMap['雅加达'] },
+                        { name: '马尼拉', value: geoCoordMap['马尼拉'] },
+                        { name: '吉隆坡', value: geoCoordMap['吉隆坡'] },
+                        { name: '曼谷', value: geoCoordMap['曼谷'] },
+                        { name: '金边', value: geoCoordMap['金边'] },
+                        { name: '新加坡', value: geoCoordMap['新加坡'] },
+                        { name: '内比都', value: geoCoordMap['内比都'] },
+                        { name: '惠灵顿', value: geoCoordMap['惠灵顿'] },
+                        { name: '斯里巴加湾市', value: geoCoordMap['斯里巴加湾市'] },
+                        { name: '万象', value: geoCoordMap['万象'] }
+                    ],
+                    symbolSize: 10,
+                    label: {
+                        normal: {
+                            show: true,
+                            formatter: '{b}',
+                            position: 'right'
+                        },
+                        emphasis: {
+                            show: true
+                        }
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: '#00ff00'
+                        }
+                    }
+                }
+            ]
+        };
+
+        myChart.setOption(option);
+    </script>
+</body>
+</html>
