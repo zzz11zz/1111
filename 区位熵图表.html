@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>区位熵数据可视化</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f0f5ff 0%, #e6f0ff 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(90deg, #1a3a5f, #2c5282);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.4rem;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.85;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .chart-container {
+            height: 600px;
+            padding: 20px;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 15px 20px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+        .legend-color {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            border-radius: 4px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+            background: #f1f5f9;
+        }
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .info-box {
+            text-align: center;
+            padding: 10px 20px;
+        }
+        .info-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+        .info-label {
+            font-size: 0.9rem;
+            color: #475569;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 500px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            .info-panel {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>中国各省份区位熵分析</h1>
+            <p class="subtitle">区域经济专业化程度与产业集聚水平可视化</p>
+        </header>
+        
+        <div class="info-panel">
+            <div class="info-box">
+                <div class="info-value">1.1342</div>
+                <div class="info-label">最高值（湖北省）</div>
+            </div>
+            <div class="info-box">
+                <div class="info-value">0.797</div>
+                <div class="info-label">第二高值（浙江省）</div>
+            </div>
+            <div class="info-box">
+                <div class="info-value">0.6292</div>
+                <div class="info-label">第三高值（福建省）</div>
+            </div>
+            <div class="info-box">
+                <div class="info-value">0.0239</div>
+                <div class="info-label">平均值</div>
+            </div>
+        </div>
+        
+        <div class="chart-container" id="chart"></div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #1e3a8a;"></div>
+                <span>高区位熵值（>0.5）</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #3b82f6;"></div>
+                <span>中等区位熵值（0.1-0.5）</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #93c5fd;"></div>
+                <span>较低区位熵值（0-0.1）</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #ef4444;"></div>
+                <span>区位熵值为0</span>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>数据来源：区位熵计算数据 | 可视化展示 © 2023</p>
+        </div>
+    </div>
+
+    <script>
+        // 初始化图表
+        const chartDom = document.getElementById('chart');
+        const myChart = echarts.init(chartDom);
+        
+        // 区位熵数据
+        const data = [
+            {name: '湖北省', value: 1.1342},
+            {name: '浙江省', value: 0.797},
+            {name: '福建省', value: 0.6292},
+            {name: '江苏省', value: 0.5077},
+            {name: '山东省', value: 0.392},
+            {name: '江西省', value: 0.2761},
+            {name: '河南省', value: 0.2745},
+            {name: '湖南省', value: 0.2358},
+            {name: '安徽省', value: 0.2331},
+            {name: '广东省', value: 0.2235},
+            {name: '河北省', value: 0.188},
+            {name: '陕西省', value: 0.1698},
+            {name: '四川省', value: 0.1574},
+            {name: '广西壮族自治区', value: 0.1249},
+            {name: '黑龙江省', value: 0.0819},
+            {name: '天津市', value: 0.0817},
+            {name: '上海市', value: 0.0816},
+            {name: '贵州省', value: 0.0539},
+            {name: '重庆市', value: 0.03319},
+            {name: '内蒙古自治区', value: 0.0328},
+            {name: '海南省', value: 0.0239},
+            {name: '山西省', value: 0.0228},
+            {name: '云南省', value: 0.0225},
+            {name: '北京市', value: 0.0203},
+            {name: '甘肃省', value: 0.0177},
+            {name: '吉林省', value: 0.0152},
+            {name: '青海省', value: 0.0067},
+            {name: '宁夏回族自治区', value: 0},
+            {name: '辽宁省', value: 0}
+        ];
+        
+        // 设置颜色
+        const getColor = (value) => {
+            if (value === 0) return '#ef4444'; // 红色表示0值
+            if (value > 0.5) return '#1e3a8a'; // 深蓝色表示高值
+            if (value > 0.1) return '#3b82f6'; // 蓝色表示中等值
+            return '#93c5fd'; // 浅蓝色表示低值
+        };
+        
+        // 配置选项
+        const option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}: {c}',
+                backgroundColor: 'rgba(255,255,255,0.95)',
+                borderColor: '#ddd',
+                borderWidth: 1,
+                textStyle: {
+                    color: '#333',
+                    fontSize: 14
+                },
+                padding: 12
+            },
+            grid: {
+                top: '10%',
+                bottom: '10%',
+                left: '15%',
+                right: '5%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                name: '区位熵值',
+                nameTextStyle: {
+                    fontSize: 14,
+                    padding: [5, 0, 0, 0]
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: '#64748b'
+                    }
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: '#e2e8f0'
+                    }
+                }
+            },
+            yAxis: {
+                type: 'category',
+                data: data.map(item => item.name),
+                axisLabel: {
+                    interval: 0,
+                    fontSize: 12,
+                    color: '#334155'
+                },
+                axisLine: {
+                    show: false
+                },
+                axisTick: {
+                    show: false
+                }
+            },
+            series: [
+                {
+                    name: '区位熵值',
+                    type: 'bar',
+                    data: data.map(item => {
+                        return {
+                            value: item.value,
+                            itemStyle: {
+                                color: getColor(item.value)
+                            }
+                        };
+                    }),
+                    label: {
+                        show: true,
+                        position: 'right',
+                        formatter: '{c}',
+                        color: '#1e293b',
+                        fontSize: 12,
+                        fontWeight: 'bold'
+                    },
+                    barWidth: '60%',
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(0, 0, 0, 0.3)'
+                        }
+                    }
+                }
+            ]
+        };
+        
+        // 设置选项并渲染图表
+        myChart.setOption(option);
+        
+        // 响应窗口大小变化
+        window.addEventListener('resize', function() {
+            myChart.resize();
+        });
+    </script>
+</body>
+</html>
