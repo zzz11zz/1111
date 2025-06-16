@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>各省非遗传承人数量</title>
+    <title>各省非遗传承人数量 - 折线图</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
         body {
@@ -21,13 +21,8 @@
             padding: 20px;
         }
         .chart-container {
-            height: 600px;
-            width: 100%;
-        }
-        .line-chart-container {
             height: 400px;
             width: 100%;
-            margin-top: 30px;
         }
         .title {
             text-align: center;
@@ -39,105 +34,15 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="title">各省非物质文化遗产传承人数量统计</h1>
+        <h1 class="title">各省非遗传承人数量 - 折线图</h1>
         
-        <div class="chart-container" id="polarChart"></div>
-        
-        <div class="line-chart-container" id="lineChart"></div>
+        <div class="chart-container" id="lineChart"></div>
     </div>
 
     <script>
         // 初始化ECharts实例
-        var chartDom = document.getElementById('polarChart');
-        var myChart = echarts.init(chartDom);
         var lineChartDom = document.getElementById('lineChart');
         var lineChart = echarts.init(lineChartDom);
-        
-        // 极坐标柱状图配置项和数据
-        var option = {
-            title: [
-                {
-                    text: '各省非遗传承人数量分析',
-                    left: 'center',
-                    textStyle: {
-                        fontSize: 18,
-                        fontWeight: 'bold',
-                        color: '#333'
-                    }
-                }
-            ],
-            polar: {
-                radius: [30, '80%']
-            },
-            tooltip: {
-                trigger: 'axis',
-                formatter: function(params) {
-                    return params[0].name + ': ' + params[0].value + '人';
-                }
-            },
-            angleAxis: {
-                type: 'category',
-                data: ['四川省', '上海市', '江苏省', '湖南省', '广东省', '青海省', '甘肃省', '海南省', 
-                      '重庆市', '河南省', '贵州省', '新疆维吾尔自治区', '浙江省', '西藏自治区', '湖北省', 
-                      '山西省', '江西省', '云南省', '辽宁省', '黑龙江省', '内蒙古自治区', '北京市', '河北省'],
-                startAngle: 75,
-                axisLabel: {
-                    color: '#333',
-                    fontSize: 12,
-                    interval: 0,
-                    rotate: 45
-                }
-            },
-            radiusAxis: {
-                type: 'value',
-                min: 0,
-                max: 12,
-                interval: 2,
-                axisLabel: {
-                    color: '#333',
-                    fontSize: 12
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: '#eee'
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#eee'
-                    }
-                }
-            },
-            series: [
-                {
-                    type: 'bar',
-                    data: [6, 5, 11, 3, 6, 2, 1, 3, 2, 1, 9, 4, 2, 1, 3, 1, 1, 1, 1, 2, 1, 1, 1],
-                    coordinateSystem: 'polar',
-                    name: '非遗传承人数',
-                    itemStyle: {
-                        color: function(params) {
-                            var colorList = [
-                                '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de',
-                                '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc', '#5470c6',
-                                '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272',
-                                '#fc8452', '#9a60b4', '#ea7ccc', '#5470c6', '#91cc75',
-                                '#fac858', '#ee6666', '#73c0de'
-                            ];
-                            return colorList[params.dataIndex % colorList.length];
-                        }
-                    },
-                    label: {
-                        show: true,
-                        position: 'middle',
-                        formatter: '{c}',
-                        fontSize: 10,
-                        color: '#fff'
-                    }
-                }
-            ],
-            animationDuration: 1500,
-            animationEasing: 'elasticOut'
-        };
         
         // 折线图配置项和数据
         var lineOption = {
@@ -212,12 +117,10 @@
         };
         
         // 应用配置项
-        myChart.setOption(option);
         lineChart.setOption(lineOption);
         
         // 响应式调整
         window.addEventListener('resize', function() {
-            myChart.resize();
             lineChart.resize();
         });
     </script>
